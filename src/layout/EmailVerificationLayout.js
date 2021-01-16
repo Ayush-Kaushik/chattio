@@ -1,11 +1,32 @@
 import React, {useContext, useState} from "react";
-import {Button, Paragraph, Heading, Pre} from "evergreen-ui";
+import {Paragraph, Heading} from "evergreen-ui";
+import {Button, Paper, Container} from "@material-ui/core";
+import CssBaseline from '@material-ui/core/CssBaseline';
 import {FirebaseContext} from "../context/FirebaseContext";
 import {useHistory} from "react-router-dom";
 import * as ROUTES from "../constants/routes";
 import Emoji from "../components/Emoji";
+import {makeStyles} from "@material-ui/core/styles";
+
+const useStyles = makeStyles((theme) => ({
+    paper: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        elevation: 3,
+        padding: "5%",
+        backgroundColor: "#1070CA",
+    },
+    alert: {
+        width: "100%"
+    },
+    form: {
+        width: "100%",
+    }
+}));
 
 const EmailVerificationLayout = () => {
+    const classes = useStyles();
     const firebaseContext = useContext(FirebaseContext);
     const history = useHistory();
     const [sentEmail, setSentEmail] = useState(false);
@@ -13,8 +34,7 @@ const EmailVerificationLayout = () => {
     const successVerification = () => {
         return (
             <Button
-                appearance="primary"
-                intent="success"
+                color="primary"
                 onClick={(e) => {
                     history.push(ROUTES.HOME);
                 }}
@@ -26,21 +46,8 @@ const EmailVerificationLayout = () => {
 
     const askVerification = () => {
         return (
-            <div
-                style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    marginRight: "5%",
-                    marginLeft: "5%",
-                }}
-            >
-                <Heading
-                    size={600}
-                    style={{
-                        marginBottom: "2%",
-                    }}
-                >
+            <div>
+                <Heading>
                     {"Verify your email address"}
                 </Heading>
                 <Paragraph
@@ -62,15 +69,8 @@ const EmailVerificationLayout = () => {
                     </Paragraph>
                 ) : (
                     <Button
-                        appearance="primary"
-                        intent="success"
-                        style={{
-                            marginTop: "5%",
-                            marginBottom: "2%",
-                            width: "150px",
-                            display: "inline-block",
-                            verticalAlign: "top",
-                        }}
+                        variant="contained"
+                        color="primary"
                         onClick={(e) => {
                             firebaseContext
                                 .sendVerificationEmail()
@@ -91,17 +91,9 @@ const EmailVerificationLayout = () => {
     };
 
     return (
-        <div
-            style={{
-                width: "100%",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                marginTop: "20%",
-            }}
-        >
-            <div
+        <Container component="main" className={classes.root}>
+        <CssBaseline />
+            <Paper
                 style={{
                     marginBottom: "5%",
                 }}
@@ -109,17 +101,12 @@ const EmailVerificationLayout = () => {
                 <Heading size={900}>
                     Get it Done <Emoji symbol={"🔥"} label={"fire"} />
                 </Heading>
-            </div>
+            </Paper>
             {firebaseContext.initialUserState.emailVerified
                 ? successVerification
                 : askVerification(firebaseContext)}
 
             <Button
-                style={{
-                    width: "150px",
-                    display: "inline-block",
-                    verticalAlign: "top",
-                }}
                 onClick={(e) => {
                     firebaseContext.signOut();
                     history.push(ROUTES.SIGN_IN);
@@ -127,7 +114,7 @@ const EmailVerificationLayout = () => {
             >
                 {"Cancel"}
             </Button>
-        </div>
+        </Container>
     );
 };
 

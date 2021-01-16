@@ -24,12 +24,12 @@ export const FireStoreProvider = (props) => {
             .where("createdBy", "==", fireBaseContext.initialUserState.email)
             .get()
             .then((snapshot) => {
-                console.log("This is called");
+                console.log("Stream lists is called!");
 
                 const firestoreList = snapshot.docs.map((item) => {
                     return {...item.data(), id: item.id};
                 });
-
+        
                 setInitialStore((prevStore) => {
                     return {
                         ...prevStore,
@@ -63,6 +63,9 @@ export const FireStoreProvider = (props) => {
                 taskCount: listDetails.taskCount,
             })
             .then((result) => {
+
+                
+
                 console.log(result);
             })
             .catch((error) => {
@@ -87,6 +90,9 @@ export const FireStoreProvider = (props) => {
     };
 
     const streamListTasks = (listId) => {
+
+        
+
         setInitialStore((prevStore) => {
             return {
                 ...prevStore,

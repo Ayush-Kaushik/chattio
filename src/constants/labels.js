@@ -1,4 +1,4 @@
-export const USERNAME = "Username/ Email";
+export const USERNAME = "Username or Email";
 export const PASSWORD = "Enter Password";
 export const NEW_PASSWORD = "Enter Password";
 export const CONFIRM_NEW_PASSWORD = "Confirm Password";

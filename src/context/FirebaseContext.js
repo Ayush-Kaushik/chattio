@@ -9,11 +9,34 @@ export const FirebaseProvider = (props) => {
     const [pending, setPending] = useState(true);
 
     const createUserWithEmailAndPassword = (email, password) => {
-        return auth.createUserWithEmailAndPassword(email, password);
+
+        return new Promise((resolve, reject) => {
+            return  auth.createUserWithEmailAndPassword(email, password).then(
+                (user) => {
+                    resolve(user);
+                }
+            ).catch(
+                (error) => {
+                    reject(error);
+                }
+            )
+        });
     };
 
     const signInWithEmailAndPassword = (email, password) => {
-        return auth.signInWithEmailAndPassword(email, password);
+        return new Promise((resolve, reject) => {
+            return  auth.signInWithEmailAndPassword(email, password).then(
+                (user) => {
+                    resolve(user);
+                }
+            ).catch(
+                (error) => {
+                    reject(error);
+                }
+            )
+        });
+
+        
     };
 
     const sendVerificationEmail = () => {

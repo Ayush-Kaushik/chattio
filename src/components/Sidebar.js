@@ -1,135 +1,112 @@
-import React, {useState, useContext} from "react";
-import {SidebarTab, Tablist, Pane, Paragraph} from "evergreen-ui";
+import React, { useState, useContext } from "react";
 import * as ROUTES from "../constants/routes";
-import {Link} from "react-router-dom";
-import {LayersIcon, PersonIcon, PowerIcon} from "evergreen-ui";
-import {FirebaseContext} from "../context/FirebaseContext";
+import { PersonIcon, PowerIcon } from "evergreen-ui";
+import { FirebaseContext } from "../context/FirebaseContext";
+import { useHistory } from "react-router-dom";
 import ListCollectionLayout from "../layout/ListCollectionLayout";
-import NewList from "./NewList";
+import NewList from "../components/NewList";
 
-const sideBarContent = [
-    {
-        label: "Lists",
-        path: ROUTES.HOME,
-        icon: <LayersIcon />,
-    },
-    {
-        label: "Profile",
-        path: ROUTES.PROFILE,
-        icon: <PersonIcon />,
-    },
-    {
-        label: "SignOut",
-        path: ROUTES.PROFILE,
-        icon: <PowerIcon />,
-    },
-];
+import CssBaseline from '@material-ui/core/CssBaseline';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import IconButton from '@material-ui/core/IconButton';
+import { makeStyles } from '@material-ui/core/styles';
+import MenuIcon from '@material-ui/icons/Menu';
+import Drawer from '@material-ui/core/Drawer';
+import Divider from '@material-ui/core/Divider';
 
-const SideBar = () => {
-    const [selectedIndex, setSelectedIndex] = useState("");
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+
+const drawerWidth = 240;
+
+const useStyles = makeStyles((theme) => ({
+    root: {
+        display: 'flex',
+    },
+    menuButton: {
+        marginRight: 36,
+    },
+    drawer: {
+        width: drawerWidth,
+        flexShrink: 0,
+        whiteSpace: 'nowrap',
+    },
+    content: {
+        flexGrow: 1,
+        padding: theme.spacing(3),
+    },
+}));
+
+const SideBar = ({ children }) => {
     const firebaseContext = useContext(FirebaseContext);
+    const [open, setOpen] = React.useState(false);
+    const classes = useStyles();
+    const history = useHistory();
+
+    const toggleDrawer = () => {
+        setOpen(!open);
+    }
+
+
+    const sideBarContent = [
+        {
+            label: "Profile",
+            path: ROUTES.PROFILE,
+            icon: <PersonIcon />,
+            action: () => {
+                toggleDrawer();
+                history.push(ROUTES.PROFILE);
+            }
+        },
+        {
+            label: "SignOut",
+            path: ROUTES.PROFILE,
+            icon: <PowerIcon />,
+            action: () => {
+                toggleDrawer();
+                firebaseContext.signOut();
+            }
+        },
+    ];
 
     return (
-        <Pane
-            style={{
-                height: "100vh",
-            }}
-            elevation={2}
-        >
-            <div>
-                <Paragraph
-                    style={{
-                        margin: "5px",
-                    }}
-                    size={400}
-                >
-                    {"Main"}
-                </Paragraph>
-                <Tablist>
-                    {sideBarContent.map((item, index) => {
-                        if (item.label === "SignOut") {
-                            return (
-                                <SidebarTab
-                                    key={index}
-                                    id={index}
-                                    onSelect={() => {
-                                        firebaseContext.signOut();
-                                    }}
-                                    isSelected={index === selectedIndex}
-                                    aria-controls={`panel-${item.label}`}
-                                    style={{
-                                        padding: "5px",
-                                        margin: "5px",
-                                    }}
-                                >
-                                    {item.icon}
-                                    <span
-                                        style={{
-                                            padding: "5px",
-                                        }}
-                                    />
-                                    {item.label}
-                                </SidebarTab>
-                            );
-                        } else {
-                            return (
-                                <Link
-                                    key={index}
-                                    to={item.path}
-                                    style={{
-                                        textDecoration: "none",
-                                    }}
-                                >
-                                    <SidebarTab
-                                        key={index}
-                                        id={index}
-                                        onSelect={() => setSelectedIndex({index})}
-                                        isSelected={index === selectedIndex}
-                                        aria-controls={`panel-${item.label}`}
-                                        style={{
-                                            padding: "5px",
-                                            margin: "5px",
-                                        }}
-                                    >
-                                        {item.icon}
-                                        <span
-                                            style={{
-                                                padding: "5px",
-                                            }}
-                                        />
-                                        {item.label}
-                                    </SidebarTab>
-                                </Link>
-                            );
-                        }
-                    })}
-                </Tablist>
-            </div>
-            <hr />
-            <Paragraph
-                style={{
-                    margin: "5px",
-                }}
-                size={400}
+        <div>
+            <CssBaseline />
+            <AppBar
+                position="fixed"
             >
-                {"My Lists"}
-            </Paragraph>
-            <div
-                style={{
-                    height: "60%",
-                    overflowY: "scroll",
-                }}
-            >
+                <Toolbar>
+                    <IconButton
+                        color="inherit"
+                        aria-label="open drawer"
+                        onClick={toggleDrawer}
+                    >
+                        <MenuIcon />
+                    </IconButton>
+                </Toolbar>
+            </AppBar>
+            <Drawer open={open} onClose={toggleDrawer} className={classes.drawer}>
+                <List>
+                    {
+                        sideBarContent.map((item, index) => (
+                            <ListItem button key={item.label} onClick={item.action}>
+                                <ListItemIcon>{item.icon}</ListItemIcon>
+                                <ListItemText primary={item.label} />
+                            </ListItem>
+                        ))
+                    }
+                </List>
+                <Divider />
                 <ListCollectionLayout />
-            </div>
-            <div
-                style={{
-                    bottom: "0",
-                }}
-            >
-                <NewList />
-            </div>
-        </Pane>
+                <ListItem>
+                    <NewList />
+                </ListItem>
+
+            </Drawer>
+        </div>
     );
 };
 

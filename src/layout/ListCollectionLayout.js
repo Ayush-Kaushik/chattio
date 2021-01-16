@@ -1,9 +1,13 @@
-import React, {useContext, useEffect} from "react";
-import {FireStoreContext} from "../context/FireStoreContext";
-import {TrashIcon, Paragraph, Button} from "evergreen-ui";
+import React, { useContext, useEffect } from "react";
+import { FireStoreContext } from "../context/FireStoreContext";
 import * as ROUTES from "../constants/routes";
-import {useHistory} from "react-router-dom";
-import {FirebaseContext} from "../context/FirebaseContext";
+import { useHistory } from "react-router-dom";
+import { FirebaseContext } from "../context/FirebaseContext";
+
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import {List} from '@material-ui/icons';
 
 const ListCollectionLayout = () => {
     const fireStoreContext = useContext(FireStoreContext);
@@ -14,53 +18,25 @@ const ListCollectionLayout = () => {
         if (fireBaseContext.initialUserState) {
             fireStoreContext.streamList();
         }
-    }, [fireBaseContext.initialUserState, fireStoreContext]);
+    }, []);
 
     return (
-        <div>
-            <div>
-                {fireStoreContext.initialStore.list.map((item) => {
-                    return (
-                        <div
-                            key={item.id}
-                            style={{
-                                display: "flex",
-                                padding: "15px",
-                                marginRight: "5px",
-                                alignItems: "center",
-                            }}
-                            onClick={() => {
-                                console.log(`This div is clicked: ${item.id}`);
-                                fireStoreContext.streamListTasks(item.id);
-                                history.push(ROUTES.HOME);
-                            }}
-                        >
-                            <Paragraph
-                                size={300}
-                                style={{
-                                    overflowX: "hidden",
-                                    textOverflow: "ellipsis",
-                                    width: "70%",
-                                }}
-                            >
-                                {item.title}
-                            </Paragraph>
-
-                            <Button
-                                color={"danger"}
-                                appearance="minimal"
-                                intent="danger"
-                                margin={"5px"}
-                                height={20}
-                                onClick={() => {}}
-                            >
-                                <TrashIcon />
-                            </Button>
-                        </div>
-                    );
-                })}
-            </div>
-        </div>
+        <>
+            {fireStoreContext.initialStore.list.map((item) => {
+                return (
+                    <ListItem
+                        key={item.id}
+                        onClick={() => {
+                            fireStoreContext.streamListTasks(item.id);
+                            history.push(ROUTES.HOME);
+                        }}
+                    >
+                        <ListItemIcon><List /></ListItemIcon>
+                        <ListItemText primary={item.title} />
+                    </ListItem>
+                );
+            })}
+        </>
     );
 };
 

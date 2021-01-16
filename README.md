@@ -37,3 +37,6 @@ WIP
   
 ## 📝 License <a name = "acknowledgement"></a>  
 - MIT
+
+## Notes
+Rendering in development mode happends twice: https://mariosfakiolas.com/blog/my-react-components-render-twice-and-drive-me-crazy/
