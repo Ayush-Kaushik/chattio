@@ -1,6 +1,6 @@
 import React, {createContext, useEffect, useState} from "react";
 import {auth} from "../components/Firebase";
-import {Spinner, Pane, Paragraph} from "evergreen-ui";
+import {CircularProgress, Grid} from "@material-ui/core";
 
 export const FirebaseContext = createContext(null);
 
@@ -9,34 +9,29 @@ export const FirebaseProvider = (props) => {
     const [pending, setPending] = useState(true);
 
     const createUserWithEmailAndPassword = (email, password) => {
-
         return new Promise((resolve, reject) => {
-            return  auth.createUserWithEmailAndPassword(email, password).then(
-                (user) => {
+            return auth
+                .createUserWithEmailAndPassword(email, password)
+                .then((user) => {
                     resolve(user);
-                }
-            ).catch(
-                (error) => {
+                })
+                .catch((error) => {
                     reject(error);
-                }
-            )
+                });
         });
     };
 
     const signInWithEmailAndPassword = (email, password) => {
         return new Promise((resolve, reject) => {
-            return  auth.signInWithEmailAndPassword(email, password).then(
-                (user) => {
+            return auth
+                .signInWithEmailAndPassword(email, password)
+                .then((user) => {
                     resolve(user);
-                }
-            ).catch(
-                (error) => {
+                })
+                .catch((error) => {
                     reject(error);
-                }
-            )
+                });
         });
-
-        
     };
 
     const sendVerificationEmail = () => {
@@ -55,7 +50,6 @@ export const FirebaseProvider = (props) => {
 
     useEffect(() => {
         return auth.onAuthStateChanged((userAuth) => {
-            console.log(userAuth);
             setInitialUser(userAuth);
             setPending(false);
         });
@@ -63,17 +57,18 @@ export const FirebaseProvider = (props) => {
 
     if (pending) {
         return (
-            <Pane
+            <Grid
                 style={{
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     height: "100vh",
+                    flexDirection: "column",
                 }}
             >
-                <Paragraph>{"Lets get some work done! "}</Paragraph>
-                <Spinner size={40} />
-            </Pane>
+                <h4>{"Lets get some work done! "}</h4>
+                <CircularProgress />
+            </Grid>
         );
     }
 

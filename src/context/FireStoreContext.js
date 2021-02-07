@@ -1,4 +1,4 @@
-import React, {createContext, useContext, useState} from "react";
+import React, {createContext, useContext, useEffect, useState} from "react";
 import firebase from "firebase/app";
 import {fireStore} from "../components/Firebase";
 import * as COLLECTION from "../constants/fireStoreCollections";
@@ -15,6 +15,10 @@ export const FireStoreProvider = (props) => {
         selectedTaskId: null,
     });
 
+    // useEffect(() => {
+    //     streamList();
+    // }, []);
+
     /**
      * streams list created by a specific user
      */
@@ -24,16 +28,15 @@ export const FireStoreProvider = (props) => {
             .where("createdBy", "==", fireBaseContext.initialUserState.email)
             .get()
             .then((snapshot) => {
-                console.log("Stream lists is called!");
-
                 const firestoreList = snapshot.docs.map((item) => {
                     return {...item.data(), id: item.id};
                 });
-        
+
                 setInitialStore((prevStore) => {
                     return {
                         ...prevStore,
                         list: firestoreList,
+                        selectedListId: firestoreList[0].id
                     };
                 });
             })
@@ -42,6 +45,7 @@ export const FireStoreProvider = (props) => {
                     return {
                         ...prevStore,
                         list: [],
+                        selectedListId: null
                     };
                 });
                 console.log(error);
@@ -63,9 +67,6 @@ export const FireStoreProvider = (props) => {
                 taskCount: listDetails.taskCount,
             })
             .then((result) => {
-
-                
-
                 console.log(result);
             })
             .catch((error) => {
@@ -80,19 +81,18 @@ export const FireStoreProvider = (props) => {
      * @returns {Promise<firebase.firestore.DocumentReference<firebase.firestore.DocumentData>>}
      */
     const createNewTask = (listId, taskDetails) => {
+        console.log(taskDetails);
+
         return fireStore.collection(listId).add({
-            completed: "",
+            completed: taskDetails.completed,
             createdDateTime: firebase.firestore.FieldValue.serverTimestamp(),
-            description: taskDetails.description,
+            duedatetime: taskDetails.dueDateTime,
             priority: taskDetails.priority,
             title: taskDetails.title,
         });
     };
 
     const streamListTasks = (listId) => {
-
-        
-
         setInitialStore((prevStore) => {
             return {
                 ...prevStore,
@@ -109,8 +109,6 @@ export const FireStoreProvider = (props) => {
                     id: doc.id,
                 }));
                 setInitialStore((prevStore) => {
-                    console.log(data);
-
                     return {
                         ...prevStore,
                         tasks: data,
@@ -129,8 +127,10 @@ export const FireStoreProvider = (props) => {
                 streamList: streamList,
                 streamListTasks: streamListTasks,
                 createNewList: createNewList,
+                createNewTask: createNewTask
             }}
         >
+            {console.log(initialStore)}
             {props.children}
         </FireStoreContext.Provider>
     );

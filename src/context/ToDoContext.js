@@ -1,10 +1,7 @@
 import React, {createContext, useEffect} from "react";
 import {v4 as uuidV4} from "uuid";
-import axios from 'axios';
 
 export const ToDoContext = createContext();
-
-
 
 const addTask = (content) => {
     const taskId = uuidV4();
@@ -22,12 +19,7 @@ export const ToDoProvider = (props) => {
     };
 
     useEffect( () => {
-        const getArticles = async() => {
-            const response = await axios.get("https://dev.to/api/articles?username=ayushkaushik");
-            console.log(response.data);
-        }
-
-        getArticles();
+        
     }, []);
 
     return (

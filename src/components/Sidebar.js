@@ -1,30 +1,39 @@
-import React, { useState, useContext } from "react";
+import React, {useState, useContext} from "react";
 import * as ROUTES from "../constants/routes";
-import { PersonIcon, PowerIcon } from "evergreen-ui";
-import { FirebaseContext } from "../context/FirebaseContext";
-import { useHistory } from "react-router-dom";
+import {Person, Power} from "@material-ui/icons";
+import {FirebaseContext} from "../context/FirebaseContext";
+import {useHistory} from "react-router-dom";
 import ListCollectionLayout from "../layout/ListCollectionLayout";
 import NewList from "../components/NewList";
+import MenuIcon from "@material-ui/icons/Menu";
 
-import CssBaseline from '@material-ui/core/CssBaseline';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import IconButton from '@material-ui/core/IconButton';
-import { makeStyles } from '@material-ui/core/styles';
-import MenuIcon from '@material-ui/icons/Menu';
-import Drawer from '@material-ui/core/Drawer';
-import Divider from '@material-ui/core/Divider';
+import {
+    IconButton,
+    Toolbar,
+    AppBar,
+    CssBaseline,
+    Drawer,
+    List,
+    Divider,
+    Typography,
+    Button,
+    Icon,
+} from "@material-ui/core";
+import {makeStyles} from "@material-ui/core/styles";
 
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
+import ListItem from "@material-ui/core/ListItem";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
 
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        display: 'flex',
+        display: "flex",
+        flexGrow: 1,
+    },
+    title: {
+        flexGrow: 1,
     },
     menuButton: {
         marginRight: 36,
@@ -32,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
     drawer: {
         width: drawerWidth,
         flexShrink: 0,
-        whiteSpace: 'nowrap',
+        whiteSpace: "nowrap",
     },
     content: {
         flexGrow: 1,
@@ -40,71 +49,66 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const SideBar = ({ children }) => {
+const SideBar = () => {
     const firebaseContext = useContext(FirebaseContext);
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
     const classes = useStyles();
     const history = useHistory();
 
     const toggleDrawer = () => {
         setOpen(!open);
-    }
+    };
 
-
-    const sideBarContent = [
+    const topBarContent = [
         {
             label: "Profile",
             path: ROUTES.PROFILE,
-            icon: <PersonIcon />,
+            icon: <Person />,
             action: () => {
-                toggleDrawer();
                 history.push(ROUTES.PROFILE);
-            }
+            },
         },
         {
             label: "SignOut",
             path: ROUTES.PROFILE,
-            icon: <PowerIcon />,
+            icon: <Power />,
             action: () => {
-                toggleDrawer();
                 firebaseContext.signOut();
-            }
+            },
         },
     ];
 
     return (
         <div>
             <CssBaseline />
-            <AppBar
-                position="fixed"
-            >
+            <AppBar position="static">
                 <Toolbar>
                     <IconButton
+                        edge="start"
                         color="inherit"
-                        aria-label="open drawer"
+                        aria-label="menu"
                         onClick={toggleDrawer}
+                        className={classes.menuButton}
                     >
                         <MenuIcon />
                     </IconButton>
+                    <Typography variant="h6" className={classes.title}>
+                        Task Lists
+                    </Typography>
+
+                    {topBarContent.map((item, index) => (
+                        <Button color="inherit" key={item.label} onClick={item.action}>
+                            <Icon>{item.icon}</Icon>
+                            {item.label}
+                        </Button>
+                    ))}
                 </Toolbar>
             </AppBar>
             <Drawer open={open} onClose={toggleDrawer} className={classes.drawer}>
-                <List>
-                    {
-                        sideBarContent.map((item, index) => (
-                            <ListItem button key={item.label} onClick={item.action}>
-                                <ListItemIcon>{item.icon}</ListItemIcon>
-                                <ListItemText primary={item.label} />
-                            </ListItem>
-                        ))
-                    }
-                </List>
-                <Divider />
                 <ListCollectionLayout />
                 <ListItem>
                     <NewList />
                 </ListItem>
-
             </Drawer>
         </div>
     );

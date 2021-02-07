@@ -1,35 +1,28 @@
-import React, {useContext, useState} from "react";
-import {
-    Button,
-    TextInput,
-    AddIcon,
-    FlagIcon,
-    CrossIcon,
-    SelectMenu,
-    Tooltip,
-    TimeIcon,
-} from "evergreen-ui";
-import {FireStoreContext} from "../context/FireStoreContext";
-import {FirebaseContext} from "../context/FirebaseContext";
+import React, { useContext, useState } from "react";
+import { Add } from "@material-ui/icons";
+import { Button, TextField, Select, MenuItem, InputLabel, FormControl } from "@material-ui/core";
+import { FireStoreContext } from "../context/FireStoreContext";
 import * as LABELS from "../constants/labels";
+import { DateTimePicker } from '@material-ui/pickers';
 
 const NewTask = () => {
     const [title, setTitle] = useState("");
-    const [priority, setPriority] = useState(null);
+    const [priority, setPriority] = useState("MEDIUM");
     const [dueDateTime, setDueDateTime] = useState(null);
     const fireStoreContext = useContext(FireStoreContext);
-    const fireBaseContext = useContext(FirebaseContext);
 
     const onSubmit = (e) => {
         e.preventDefault();
+        console.log(dueDateTime);
 
-        fireStoreContext.createNewTask({
-            listId: fireBaseContext.initialUserState.selectedListId,
+        fireStoreContext.createNewTask(fireStoreContext.initialStore.selectedListId, {
             title: title,
-            createDateTime: new Date().getSeconds(),
+            createDateTime: new Date(),
+            dueDateTime: JSON.stringify(dueDateTime),
+            completed: false
         });
 
-        fireStoreContext.streamList();
+        fireStoreContext.streamListTasks(fireStoreContext.initialUserState.selectedListId);
         setTitle("");
     };
 
@@ -37,22 +30,25 @@ const NewTask = () => {
         <div
             style={{
                 display: "flex",
-                flexDirection: "column",
+                flexDirection: "column"
             }}
         >
+            {console.log(JSON.stringify(dueDateTime))}
             <div
                 style={{
                     display: "flex",
-                    justifyContent: "flex-start",
+                    flexDirection: "column",
                     marginBottom: "5px",
+                    width: "50%"
                 }}
             >
-                <TextInput
+                <TextField
                     style={{
                         marginRight: "2px",
+                        marginBottom: "5px"
                     }}
                     type="text"
-                    name={"title"}
+                    variant="outlined"
                     value={title}
                     height={32}
                     label={"Title"}
@@ -62,30 +58,43 @@ const NewTask = () => {
                     }}
                 />
 
-                <div
+                <DateTimePicker
                     style={{
                         marginRight: "2px",
+                        marginBottom: "5px"
                     }}
-                >
-                    <Tooltip content={"Priority"}>
-                        <SelectMenu
-                            height={100}
-                            width={180}
-                            hasTitle={false}
-                            hasFilter={false}
-                            selected={priority}
-                            options={LABELS.PRIORITY}
-                            onSelect={(e) => setPriority(e.target.value)}
-                        >
-                            <Button>
-                                <FlagIcon />
-                            </Button>
-                        </SelectMenu>
-                    </Tooltip>
-                </div>
-                <Button>
-                    <TimeIcon />
-                </Button>
+                    label="Due Date"
+                    value={dueDateTime}
+                    inputVariant="outlined"
+                    onChange={setDueDateTime} />
+
+
+                <FormControl
+                    variant="outlined"
+                    style={{
+                        marginRight: "2px",
+                        marginBottom: "5px"
+                    }}>
+                    <InputLabel id="priority-outlined-label">{"Priority"}</InputLabel>
+                    <Select
+                        id="priority-outlined-label"
+                        selected={priority}
+                        options={LABELS.PRIORITY}
+                        onChange={(e) => {
+                            console.log(e.target.value)
+                            setPriority(e.target.value)
+                        }}
+                        value={priority}
+                        label="Priority"
+                    >
+                        {
+                            LABELS.PRIORITY.map((item, index) => (
+                                <MenuItem value={item.value} key={`${item.label}-${index}`}>{item.label}</MenuItem>
+                            ))
+                        }
+                    </Select>
+                </FormControl>
+
             </div>
 
             <div
@@ -98,27 +107,14 @@ const NewTask = () => {
                     style={{
                         marginRight: "2px",
                     }}
-                    appearance="primary"
-                    iconBefore={AddIcon}
-                    intent="success"
+                    color="primary"
+                    variant="contained"
+                    startIcon={<Add />}
                     onClick={(e) => {
                         onSubmit(e);
                     }}
                 >
                     {"Add Task"}
-                </Button>
-                <Button
-                    style={{
-                        marginRight: "2px",
-                    }}
-                    appearance="primary"
-                    iconBefore={CrossIcon}
-                    intent={"danger"}
-                    onSubmit={(e) => {
-                        console.log("scratch that bro");
-                    }}
-                >
-                    {"Cancel"}
                 </Button>
             </div>
         </div>

@@ -18,7 +18,6 @@ const TaskCollectionLayout = () => {
             <div>
                 {fireStoreContext.initialStore.tasks.map((item) => {
                     console.log(item);
-
                     return (
                         <div
                             key={item.id}

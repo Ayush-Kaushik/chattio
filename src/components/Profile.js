@@ -1,13 +1,23 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, { useContext, useEffect, useState } from "react";
 import * as LABELS from "../constants/labels";
 import * as ROUTES from "../constants/routes";
-import {Button, TextInputField} from "evergreen-ui";
+import { makeStyles } from '@material-ui/core/styles';
 import * as EmailValidator from "email-validator";
-import {FirebaseContext} from "../context/FirebaseContext";
-import {useHistory} from "react-router-dom";
+import { FirebaseContext } from "../context/FirebaseContext";
+import { useHistory } from "react-router-dom";
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+
+const useStyles = makeStyles(() => ({
+    inputBlock: {
+        marginTop: 10,
+        marginBottom: 10
+    }
+}));
 
 const Profile = () => {
     const firebaseContext = useContext(FirebaseContext);
+    const classes = useStyles();
     const history = useHistory();
     const [username, setUsername] = useState(firebaseContext.initialUserState.email);
     const [newPassword, setNewPassword] = useState("");
@@ -59,8 +69,6 @@ const Profile = () => {
 
     useEffect(() => {
         (async () => {
-            console.log("This is called");
-
             if (errors.isError === false) {
                 const promises = [];
                 if (username !== firebaseContext.initialUserState.email) {
@@ -89,82 +97,83 @@ const Profile = () => {
     return (
         <div
             style={{
-                width: "100%",
-                height: "100%",
-                backgroundColor: "#EDF0F2",
+                marginTop: "10%",
+                width: "40%",
+                marginRight: "30%",
+                marginLeft: "30%"
             }}
         >
-            <div
-                style={{
-                    marginTop: "10%",
-                    width: "40%",
-                    marginRight: "30%",
-                    marginLeft: "30%",
+            <TextField
+                className={classes.inputBlock}
+                fullWidth
+                variant="outlined"
+                type="text"
+                name={"username"}
+                value={username}
+                label={LABELS.USERNAME}
+                validationMessage={
+                    errors.username.length > 0 ? errors.username : false
+                }
+                onChange={(e) => {
+                    setErrors((prevState) => ({
+                        ...prevState,
+                        username: "",
+                    }));
+                    setUsername(e.target.value);
+                }}
+            />
+
+            <TextField
+                className={classes.inputBlock}
+                fullWidth
+                variant="outlined"
+                type="password"
+                name={"password"}
+                label={LABELS.NEW_PASSWORD}
+                placeholder={"leave blank to keep the same"}
+                value={newPassword}
+                validationMessage={
+                    errors.newPassword.length > 0 ? errors.newPassword : false
+                }
+                onChange={(e) => {
+                    setErrors((prevState) => ({
+                        ...prevState,
+                        newPassword: "",
+                    }));
+                    setNewPassword(e.target.value);
+                }}
+            />
+
+            <TextField
+                className={classes.inputBlock}
+                fullWidth
+                variant="outlined"
+                type="password"
+                name={"password"}
+                placeholder={"leave blank to keep the same"}
+                label={LABELS.CONFIRM_NEW_PASSWORD}
+                value={confirmPassword}
+                validationMessage={
+                    errors.confirmPassword.length > 0 ? errors.confirmPassword : false
+                }
+                onChange={(e) => {
+                    setErrors((prevState) => ({
+                        ...prevState,
+                        confirmPassword: "",
+                    }));
+                    setConfirmPassword(e.target.value);
+                }}
+            />
+
+            <Button
+                variant="contained"
+                color="primary"
+                onClick={(e) => {
+                    onSubmit(e);
                 }}
             >
-                <TextInputField
-                    type="text"
-                    name={"username"}
-                    value={username}
-                    label={LABELS.USERNAME}
-                    validationMessage={
-                        errors.username.length > 0 ? errors.username : false
-                    }
-                    onChange={(e) => {
-                        setErrors((prevState) => ({
-                            ...prevState,
-                            username: "",
-                        }));
-                        setUsername(e.target.value);
-                    }}
-                />
-
-                <TextInputField
-                    type="password"
-                    name={"password"}
-                    label={LABELS.NEW_PASSWORD}
-                    placeholder={"leave blank to keep the same"}
-                    value={newPassword}
-                    validationMessage={
-                        errors.newPassword.length > 0 ? errors.newPassword : false
-                    }
-                    onChange={(e) => {
-                        setErrors((prevState) => ({
-                            ...prevState,
-                            newPassword: "",
-                        }));
-                        setNewPassword(e.target.value);
-                    }}
-                />
-
-                <TextInputField
-                    type="password"
-                    name={"password"}
-                    placeholder={"leave blank to keep the same"}
-                    label={LABELS.CONFIRM_NEW_PASSWORD}
-                    value={confirmPassword}
-                    validationMessage={
-                        errors.confirmPassword.length > 0 ? errors.confirmPassword : false
-                    }
-                    onChange={(e) => {
-                        setErrors((prevState) => ({
-                            ...prevState,
-                            confirmPassword: "",
-                        }));
-                        setConfirmPassword(e.target.value);
-                    }}
-                />
-
-                <Button
-                    appearance="primary"
-                    intent="success"
-                    onClick={(e) => {
-                        onSubmit(e);
-                    }}
-                >
-                    Update
+                Update
                 </Button>
-            </div>
         </div>
     );
 };
